@@ -44,6 +44,14 @@
             <td>Date</td>
             <td><%= Time.now.strftime("%d-%m-%Y") %></td>
           </tr>
+          <tr>
+            <td>Payment Mode</td>
+            <td><%= @tmpBill['buyer_payment_mode'] %></td>
+          </tr>
+          <tr>
+            <td>Additional Info</td>
+            <td><%= @tmpBill['buyer_additional_info'] %></td>
+          </tr>
         </table>
       </td>
     </tr>
