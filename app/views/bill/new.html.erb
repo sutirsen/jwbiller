@@ -1,0 +1,339 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <div class="panel-title">Bill Generator</div>
+  </div>
+  <div class="panel-body">
+    <%= form_tag("/bill/create.pdf", method: "post", id: "billCreation", class: "form-horizontal") do %>
+      <div class="form-group">
+        <%= label_tag(:buyer_name, "Buyer Name", class: "col-sm-2 control-label") %>
+        <div class="col-sm-10">
+          <%= text_field(:tmpbill, :buyer_name, class: "form-control") %>
+        </div>
+      </div>
+      <div class="form-group">
+        <%= label_tag(:buyer_address, "Buyer Address", class: "col-sm-2 control-label") %>
+        <div class="col-sm-10">
+          <%= text_field(:tmpbill, :buyer_address, class: "form-control") %>
+        </div>
+      </div>
+      <div class="form-group">
+        <%= label_tag(:buyer_contact, "Buyer Contact", class: "col-sm-2 control-label") %>
+        <div class="col-sm-10">
+          <%= text_field(:tmpbill, :buyer_contact, class: "form-control") %>
+        </div>
+      </div>
+      <div class="form-group">
+        <%= label_tag(:buyer_pan, "Buyer PAN", class: "col-sm-2 control-label") %>
+        <div class="col-sm-10">
+          <%= text_field(:tmpbill, :buyer_pan, class: "form-control") %>
+        </div>
+      </div>
+      <div class="form-group">
+        <%= label_tag(:buyer_order_no, "Order No", class: "col-sm-2 control-label") %>
+        <div class="col-sm-10">
+          <%= text_field(:tmpbill, :buyer_order_no, class: "form-control") %>
+        </div>
+      </div>
+      <fieldset>
+        <legend>General Info</legend>
+
+        <div class="form-group"> 
+          <%= label_tag(:rebate_amount_gold, "Discount Percentage (Gold)", class: "col-sm-2 control-label") %>
+          <div class="col-sm-10">
+            <%= text_field(:tmpbill, :rebate_gold, class: "form-control", placeholder: "0.0", value: 0) %>
+          </div>
+        </div>
+
+        <div class="form-group"> 
+          <%= label_tag(:rebate_amount_silver, "Discount Percentage (Silver)", class: "col-sm-2 control-label") %>
+          <div class="col-sm-10">
+            <%= text_field(:tmpbill, :rebate_silver, class: "form-control", placeholder: "0.0", value: 0) %>
+          </div>
+        </div>
+
+        <div class="form-group"> 
+          <%= label_tag(:cgst, "CGST", class: "col-sm-2 control-label") %>
+          <div class="col-sm-10">
+            <div class="input-group">
+              <span class="input-group-addon">%</span>
+              <%= text_field(:tmpbill, :cgst, class: "form-control", value: "1.5") %>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group"> 
+          <%= label_tag(:sgst, "SGST", class: "col-sm-2 control-label") %>
+          <div class="col-sm-10">
+            <div class="input-group">
+              <span class="input-group-addon">%</span>
+              <%= text_field(:tmpbill, :sgst, class: "form-control", value: "1.5") %>
+            </div>
+          </div>
+        </div>
+
+        <div class="checkbox">
+          <label><input type="checkbox" name="tmpbill[estimation_bill]" value="1">Estimation Bill ?</label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Items</legend> 
+        <button class="btn btn-primary" type="button" onclick="addItem()">Add Item</button>
+        <button class="btn btn-danger" type="button" onclick="removeItem()">Remove last Item</button>
+        <div id="items">
+          <div id="item_1" class="itmCls">
+            <h4>Item 1</h4>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_1_name">Description</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][name]" id="item_1_name" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_1_qty">Qty</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][qty]" id="item_1_qty" onkeyup="calcWeight(1)" value="1"/>
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_1_purity">Purity</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][purity]" id="item_1_purity" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_1_gwgt">Gross Weight (gm)</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][gwgt]" id="item_1_gwgt" value="0" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_1_nwgt">Net Weight (gm)</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][nwgt]" id="item_1_nwgt" onkeyup="calculateTotalAmount(1)" value="0" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_1_type">Type</label>
+              <div class="col-sm-10">
+                <select class="form-control" name="tmpbill[items][][type]" id="item_1_type" onchange="changeRate(1)">
+                  <option value="">--Select Type--</option>
+                  <option value="g">Gold</option>
+                  <option value="s">Silver</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_1_rate">Rate</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][rate]" id="item_1_rate" readonly="" value="0" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_1_stone">Stone Value</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][stone]" id="item_1_stone" value="0" onkeyup="calculateTotalAmount(1)" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_1_mkchrgrt">Making Charge Rate</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][mkchrgrt]" id="item_1_mkchrgrt" readonly="" value="0" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_1_mkchrg">Making Charge</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][mkchrg]" id="item_1_mkchrg" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_1_total">Total</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][total]" id="item_1_total" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <input type="submit" class="btn btn-success" name="submit" id="sbmt" value="Generate Bill"/>
+      <input type="button" class="btn btn-info" name="preview" value="Preview" onclick="previewBill()" />
+    <% end %>
+  </div>
+</div>
+<script type="text/javascript">
+  let itmTemplate = `<h4>Item #ID#</h4>
+              <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_#ID#_name">Description</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][name]" id="item_#ID#_name" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_#ID#_qty">Qty</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][qty]" id="item_#ID#_qty" onkeyup="calcWeight(#ID#)" value="1"/>
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_#ID#_purity">Purity</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][purity]" id="item_#ID#_purity" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_#ID#_gwgt">Gross Weight (gm)</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][gwgt]" id="item_#ID#_gwgt" value="0" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_#ID#_nwgt">Net Weight (gm)</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][nwgt]" id="item_#ID#_nwgt" onkeyup="calculateTotalAmount(#ID#)" value="0" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_#ID#_type">Type</label>
+              <div class="col-sm-10">
+                <select class="form-control" name="tmpbill[items][][type]" id="item_#ID#_type" onchange="changeRate(#ID#)">
+                  <option value="">--Select Type--</option>
+                  <option value="g">Gold</option>
+                  <option value="s">Silver</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_#ID#_rate">Rate</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][rate]" id="item_#ID#_rate" readonly="" value="0" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_#ID#_stone">Stone Value</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][stone]" id="item_#ID#_stone" value="0" onkeyup="calculateTotalAmount(#ID#)" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_#ID#_mkchrgrt">Making Charge Rate</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][mkchrgrt]" id="item_#ID#_mkchrgrt" readonly="" value="0" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_#ID#_mkchrg">Making Charge</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][mkchrg]" id="item_#ID#_mkchrg" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_#ID#_total">Total</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][total]" id="item_#ID#_total" />
+              </div>
+            </div>`;
+  let lastItemId = 1;
+  var billConfig = JSON.parse('<%= @billConfig.to_json.html_safe %>');
+
+  function addItem() {
+    lastItemId = addItemUtil(itmTemplate, "#ID#", lastItemId, "items");
+  }
+
+  function removeItem() {
+    lastItemId = removeItemUtil("itmCls", lastItemId);
+  }
+
+  function calcWeight(id) {
+    let weight = Number(document.getElementById('item_'+id+'_nwgt').value);
+    let stone = Number(document.getElementById('item_'+id+'_stone').value);
+    let qty = Number(document.getElementById('item_'+id+'_qty').value);
+    document.getElementById('item_'+id+'_nwgt').value = weight * qty;
+    document.getElementById('item_'+id+'_stone').value = stone * qty;
+    calculateTotalAmount(id);
+  }
+
+  function changeRate(id) {
+    let type = document.getElementById('item_'+id+'_type').value;
+    let discount = 0;
+    
+    if(type == 'g') {
+      let rateofMakingCharge = Number(billConfig['gold_making_charge']);
+      discount = Number(document.getElementById('tmpbill_rebate_gold').value);
+      if(discount != 0) {
+        rateofMakingCharge = rateofMakingCharge - (rateofMakingCharge * (discount/100));
+      }
+      document.getElementById('item_'+id+'_rate').value = billConfig['gold_rate'];
+      document.getElementById('item_'+id+'_mkchrgrt').value = rateofMakingCharge;
+
+    } else if(type == 's') {
+      let rateofMakingCharge = Number(billConfig['silver_making_charge']);
+      discount = Number(document.getElementById('tmpbill_rebate_silver').value);
+      if(discount != 0) {
+        rateofMakingCharge = rateofMakingCharge - (rateofMakingCharge * (discount/100));
+      }
+      document.getElementById('item_'+id+'_rate').value = billConfig['silver_rate'];
+      document.getElementById('item_'+id+'_mkchrgrt').value = rateofMakingCharge;
+    } else {
+      document.getElementById('item_'+id+'_rate').value = 0;
+      document.getElementById('item_'+id+'_mkchrgrt').value = 0;
+    }
+    calculateTotalAmount(id);
+  }
+
+  function calculateMakingCharge(id) {
+    let rate = Number(document.getElementById('item_'+id+'_rate').value);
+    let rateofMakingCharge = Number(document.getElementById('item_'+id+'_mkchrgrt').value);
+    let type = document.getElementById('item_'+id+'_type').value;
+    let netWeight = Number(document.getElementById('item_'+id+'_nwgt').value);
+    let discount = 0;
+    if(type == 'g') {
+      discount = Number(document.getElementById('tmpbill_rebate_gold').value);
+    } else if(type == 's') {
+      discount = Number(document.getElementById('tmpbill_rebate_silver').value);
+    }
+    if(discount != 0) {
+      rateofMakingCharge = rateofMakingCharge - (rateofMakingCharge * (discount/100));
+    }
+    let totalMakingCharge = rateofMakingCharge * netWeight;
+    totalMakingCharge = totalMakingCharge.toFixed(2);
+    document.getElementById('item_'+id+'_mkchrg').value =  totalMakingCharge;
+    return totalMakingCharge;
+  }
+
+  function calculateTotalAmount(id) {
+    let rate = Number(document.getElementById('item_'+id+'_rate').value);
+    let netWeight = Number(document.getElementById('item_'+id+'_nwgt').value);
+    let totalGoldValue =  rate * netWeight;
+    let totalMakingCharge =  calculateMakingCharge(id);
+    let stoneValue = Number(document.getElementById('item_'+id+'_stone').value);
+    let totalAmount = Number(totalMakingCharge) + totalGoldValue + Number(stoneValue);
+    document.getElementById('item_'+id+'_total').value =  totalAmount.toFixed(2);
+  }
+
+
+  // Utility functions
+  function addItemUtil(itemTemplate, itemIdPlaceHolder, lastItemId, appendTo) {
+    lastItemId++;
+    const currentItemId = lastItemId;
+    itemTemplate = itemTemplate.split(itemIdPlaceHolder).join(currentItemId);
+    let tmpElem = document.createElement('div');
+    tmpElem.id = `item_${currentItemId}`;
+    tmpElem.className = "itmCls";
+    tmpElem.innerHTML = itemTemplate;
+    document.getElementById(appendTo).appendChild(tmpElem);
+    return lastItemId;
+  }
+
+  function removeItemUtil(itmSelector, lastItemId) {
+    let descendents = document.querySelectorAll(`.${itmSelector}`);
+    lastItem = descendents[descendents.length - 1];
+    lastItem.parentNode.removeChild(lastItem);
+    return lastItemId - 1;
+  }
+
+  function previewBill(){
+    var formElem = document.getElementById("billCreation");
+    formElem.action = "/bill/preview";
+    document.getElementById("sbmt").click();
+  }
+</script>

@@ -1,0 +1,177 @@
+<table border="1" cellspacing="0">
+    <tr>
+      <td>
+        <table style="width: 100%" cellspacing="0">
+          <tr>
+            <td align="left" style="width: 33%">No: <%= @tmpBill['buyer_order_no'] %></td>
+            <% if @tmpBill["estimation_bill"] %>
+              <td align="center" style="width: 33%"><b>Estimation Bill</b></td>
+            <% else %>
+              <td align="center" style="width: 33%"><b>Tax Invoice</b></td>
+            <% end %>
+            <td align="right">Original Buyer's Copy<br/> GST No: 19AGKPM7671F1ZX</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <h2>S.B. Jewellers</h2>
+        <p>45, Chandi Charan Ghosh Road, Barisha, Silpara, Kolkata 700008</p>
+        <p>Phone - (033) 2447-2096, (+91) 9433954734</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table style="width: 100%;">
+          <tr>
+            <td>Name</td>
+            <td><%= @tmpBill['buyer_name'] %></td>
+          </tr>
+          <tr>
+            <td>Address</td>
+            <td><%= @tmpBill['buyer_address'] %></td>
+          </tr>
+          <tr>
+            <td>Phone Number</td>
+            <td><%= @tmpBill['buyer_contact'] %></td>
+          </tr>
+          <tr>
+            <td>Order Number</td>
+            <td><%= @tmpBill['buyer_order_no'] %></td>
+          </tr>
+          <tr>
+            <td>Date</td>
+            <td><%= Time.now.strftime("%d-%m-%Y") %></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table border="1" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Qty</th>
+              <th>Description</th>
+              <th>Purity</th>
+              <th>Gross Weight</th>
+              <th>Net Weight</th>
+              <th>Rate</th>
+              <th>Stone Value</th>
+              <th>Making Charge</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <% totalAmount = 0 %>
+          <tbody>
+          <% @tmpBill['items'].each do |itm| %>
+            <tr>
+              <td><%= itm['qty'] %></td>
+              <td><%= itm['name'] %></td>
+              <td><%= itm['purity'] %></td>
+              <td><%= itm['gwgt'] %></td>
+              <td><%= itm['nwgt'] %></td>
+              <td><%= itm['rate'] %></td>
+              <td><%= itm['stone'] %></td>
+              <td><%= itm['mkchrg'] + " (" + itm['mkchrgrt'] + "/gm" + ")" %></td>
+              <td><%= itm['total'] %></td>
+            </tr>
+          <% totalAmount += itm['total'].to_f %>
+          <% end %>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table style="width: 100%" cellspacing="0">
+          <tr>
+            <td style="width: 50%" valign="top">
+              Advance: 
+            </td>
+            <td>
+              <table style="width: 100%" cellspacing="0">
+                <tr>
+                  <td align="left">Total</td>
+                  <td align="right"><%= totalAmount %></td>
+                </tr>
+                <tr>
+                  <td align="left">S.GST (<%= @tmpBill['sgst'] %>%)</td>
+                  <% sgst = totalAmount * ( @sgstRate / 100 ) %>
+                  <% sgst = sgst.round(2) %>
+                  <td align="right"><%= sgst %></td>
+                </tr>
+                <tr>
+                  <td align="left">C.GST (<%= @tmpBill['cgst'] %>%)</td>
+                  <% cgst = totalAmount * ( @cgstRate / 100 ) %>
+                  <% cgst = cgst.round(2) %>
+                  <td align="right"><%= cgst %></td>
+                </tr>
+                <tr>
+                  <td align="left">I.GST (3%) (Total Tax)</td>
+                  <td align="right"><%= sgst + cgst %></td>
+                </tr>
+                <tr>
+                  <td align="left">Grand Total <br/>(After 3% GST)</td>
+                  <td align="right"><%= (totalAmount + cgst + sgst).round(2) %></td>
+                  <% finalAmountNRO = (totalAmount + cgst + sgst).round(2) %>
+                  <% finalAmountRO = finalAmountNRO.round %>
+                </tr>
+                <tr>
+                  <td align="left">Round off</td>
+                  <% rndAmt = "0." + finalAmountNRO.to_s.split(".").last %>
+                  <% rndAmt = rndAmt.to_f %>
+                  <% if rndAmt > 0.50 %>
+                    <td align="right"><%= "+ " + (1.00 - rndAmt).to_s %></td>
+                  <% else %>
+                    <td align="right"><%= "- " + rndAmt %></td>
+                  <% end %>
+                </tr>
+                <tr>
+                  <td align="left"><strong>Payable Amount</strong></td>
+                  <td align="right"><%= finalAmountRO %></td>
+                </tr>
+
+              </table>              
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <ul>
+          <li>All weights are in gm</li>
+          <li>Purities are in carat</li>
+          <% if @tmpBill['rebate_gold'] != 0 %>
+            <li><b><%= @tmpBill['rebate_gold'] %>% discount was applied on all gold making charges</b></li>
+          <% end %>
+          <% if @tmpBill['rebate_silver'] != 0 %>
+            <li><b><%= @tmpBill['rebate_silver'] %>% discount was applied on all silver making charges</b></li>
+          <% end %>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table style="width: 100%;" cellspacing="0">
+          <tr>
+            <td style="width: 33%">
+              <br/><br><br><br>
+              Signature of Purchaser
+            </td>
+            <td align="center">
+              <br><br><br><br>
+              Thank You, Visit Again
+            </td>
+            <td align="right">
+              <br><br><br><br>
+              S.B Jewellers
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
