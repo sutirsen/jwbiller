@@ -21,7 +21,7 @@
     <tr>
       <td align="center">
         <h3><font size="6"><font color="#f66669">S.B. Jewellers</font></font></h3>
-        <p><font size="4">45,Chandi Charan Ghosh Road, Barisha, Silpara, Kolkata 700008</font>></p>
+        <p><font size="4">45,Chandi Charan Ghosh Road, Barisha, Silpara, Kolkata 700008</font></p>
         <p><font size="4">Phone - (+91) 8013386169, (+91) 9433954734</font></p>
       </td>
     </tr>
@@ -108,11 +108,12 @@
         <table style="width: 100%; font-size: 15px;" cellspacing="0">
           <tr>
 
-            <% sgst = totalAmount * ( @sgstRate / 100 ) %>
+            <% totalAmountAfterDiscount = totalAmount - @tmpBill['flat_discount'].to_f %>
+            <% sgst = totalAmountAfterDiscount * ( @sgstRate / 100 ) %>
             <% sgst = sgst.round(2) %>
-            <% cgst = totalAmount * ( @cgstRate / 100 ) %>
+            <% cgst = totalAmountAfterDiscount * ( @cgstRate / 100 ) %>
             <% cgst = cgst.round(2) %>
-            <% finalAmountNRO = (totalAmount + cgst + sgst).round(2) %>
+            <% finalAmountNRO = (totalAmountAfterDiscount + cgst + sgst).round(2) %>
             <% finalAmountRO = finalAmountNRO.round %>
             
             <td style="width: 50%" valign="top">
@@ -124,6 +125,16 @@
                   <td align="left">Total</td>
                   <td align="right"><%= totalAmount %></td>
                 </tr>
+                <% if @tmpBill['flat_discount'].to_f != 0 %>
+                <tr>
+                  <td align="left">Flat Discount</td>
+                  <td align="right"><%=  -@tmpBill['flat_discount'].to_f %></td>
+                </tr>
+                <tr>
+                  <td align="left">Amount after Discount</td>
+                  <td align="right"><%= totalAmountAfterDiscount %></td>
+                </tr>
+                <% end %>
                 <tr>
                   <td align="left">S.GST (<%= @tmpBill['sgst'] %>%)</td>
                   <td align="right"><%= sgst %></td>
@@ -138,9 +149,10 @@
                 </tr>
                 <tr>
                   <td align="left">Grand Total <br/>(After 3% GST)</td>
-                  <td align="right"><%= (totalAmount + cgst + sgst).round(2) %></td>
+                  <td align="right"><%= finalAmountNRO %></td>
                   
                 </tr>
+                
                 <tr>
                   <td align="left">Round off</td>
                   <% rndAmt = "0." + finalAmountNRO.to_s.split(".").last %>

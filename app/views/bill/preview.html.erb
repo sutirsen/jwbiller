@@ -110,6 +110,19 @@
                   <td align="left">Total</td>
                   <td align="right"><%= totalAmount %></td>
                 </tr>
+                <% totalAmountAfterDiscount = totalAmount - @tmpBill['flat_discount'].to_f %>
+                <% finalAmountNRO = (totalAmountAfterDiscount + cgst + sgst).round(2) %>
+                <% finalAmountRO = finalAmountNRO.round %>
+                <% if @tmpBill['flat_discount'].to_f != 0 %>
+                <tr>
+                  <td align="left">Flat Discount</td>
+                  <td align="right"><%=  -@tmpBill['flat_discount'].to_f %></td>
+                </tr>
+                <tr>
+                  <td align="left">Amount after Discount</td>
+                  <td align="right"><%= totalAmountAfterDiscount %></td>
+                </tr>
+                <% end %>
                 <tr>
                   <td align="left">S.GST (<%= @tmpBill['sgst'] %>%)</td>
                   <% sgst = totalAmount * ( @sgstRate / 100 ) %>
@@ -128,9 +141,7 @@
                 </tr>
                 <tr>
                   <td align="left">Grand Total <br/>(After 3% GST)</td>
-                  <td align="right"><%= (totalAmount + cgst + sgst).round(2) %></td>
-                  <% finalAmountNRO = (totalAmount + cgst + sgst).round(2) %>
-                  <% finalAmountRO = finalAmountNRO.round %>
+                  <td align="right"><%= finalAmountNRO %></td>
                 </tr>
                 <tr>
                   <td align="left">Round off</td>
