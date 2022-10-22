@@ -58,8 +58,12 @@
           </tr>
           <% if @tmpBill['deposited_gold'].to_f != 0 %>
           <tr>
-            <td>Deposited Gold (24 Carat)</td>
+            <td>Deposited Gold after Testing</td>
             <td><%= @tmpBill['deposited_gold'] %> gm</td>
+          </tr>
+          <tr>
+            <td>Deposited Gold Rate</td>
+            <td><%= @tmpBill['deposited_gold_rate'] %> gm</td>
           </tr>
           <% end %>
         </table>
@@ -108,7 +112,9 @@
         <table style="width: 100%; font-size: 15px;" cellspacing="0">
           <tr>
 
+            <% depositedGoldAmount = @tmpBill['deposited_gold'].to_f * @tmpBill['deposited_gold_rate'].to_f %>
             <% totalAmountAfterDiscount = totalAmount - @tmpBill['flat_discount'].to_f %>
+            <% totalAmountAfterDiscount = totalAmountAfterDiscount - depositedGoldAmount %>
             <% sgst = totalAmountAfterDiscount * ( @sgstRate / 100 ) %>
             <% sgst = sgst.round(2) %>
             <% cgst = totalAmountAfterDiscount * ( @cgstRate / 100 ) %>
@@ -125,6 +131,12 @@
                   <td align="left">Total</td>
                   <td align="right"><%= totalAmount %></td>
                 </tr>
+                <% if @tmpBill['deposited_gold'].to_f != 0 %>
+                <tr>
+                  <td align="left">Deduction for Deposited Gold after Testing</td>
+                  <td align="right"><%= - depositedGoldAmount %></td>
+                </tr>
+                <% end %>
                 <% if @tmpBill['flat_discount'].to_f != 0 %>
                 <tr>
                   <td align="left">Flat Discount on Making Charge</td>
