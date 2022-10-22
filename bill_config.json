@@ -1,6 +1,10 @@
 {
-  "gold_rate"           : 3214,
-  "silver_rate"         : 43,
-  "gold_making_charge"  : 500,
-  "silver_making_charge": 20
+  "gold_18k_rate"           : 2880,
+  "gold_22k_rate"      		: 2920,
+  "silver_rate"         	: 60,
+  "gold_18k_making_charge"  : 0,
+  "gold_22k_making_charge"  : 0,
+  "silver_making_charge"	: 0,
+  "gold_discount"			: 0,
+  "silver_discount"			: 0
 }

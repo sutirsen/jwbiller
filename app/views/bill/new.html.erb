@@ -43,7 +43,7 @@
       <div class="form-group">
         <%= label_tag(:buyer_additional_info, "Additional Info", class: "col-sm-2 control-label") %>
         <div class="col-sm-10">
-          <%= text_field(:tmpbill, :buyer_additional_info, class: "form-control") %>
+          <%= text_area(:tmpbill, :buyer_additional_info, class: "form-control") %>
         </div>
       </div>
       <fieldset>
@@ -52,14 +52,14 @@
         <div class="form-group"> 
           <%= label_tag(:rebate_amount_gold, "Discount Percentage (Gold)", class: "col-sm-2 control-label") %>
           <div class="col-sm-10">
-            <%= text_field(:tmpbill, :rebate_gold, class: "form-control", placeholder: "0.0", value: 0) %>
+            <%= text_field(:tmpbill, :rebate_gold, class: "form-control", placeholder: "0.0", value: @billConfig['gold_discount']) %>
           </div>
         </div>
 
         <div class="form-group"> 
           <%= label_tag(:rebate_amount_silver, "Discount Percentage (Silver)", class: "col-sm-2 control-label") %>
           <div class="col-sm-10">
-            <%= text_field(:tmpbill, :rebate_silver, class: "form-control", placeholder: "0.0", value: 0) %>
+            <%= text_field(:tmpbill, :rebate_silver, class: "form-control", placeholder: "0.0", value: @billConfig['silver_discount']) %>
           </div>
         </div>
 
@@ -113,15 +113,15 @@
               </div>
             </div>
             <div class="form-group"> 
-              <label class="col-sm-2 control-label" for="item_1_gwgt">Gross Weight (gm)</label>
-              <div class="col-sm-10">
-                <input class="form-control" type="text" name="tmpbill[items][][gwgt]" id="item_1_gwgt" value="0" />
-              </div>
-            </div>
-            <div class="form-group"> 
               <label class="col-sm-2 control-label" for="item_1_nwgt">Net Weight (gm)</label>
               <div class="col-sm-10">
                 <input class="form-control" type="text" name="tmpbill[items][][nwgt]" id="item_1_nwgt" onkeyup="calculateTotalAmount(1)" value="0" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_1_gwgt">Gross Weight (gm)</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][gwgt]" id="item_1_gwgt" value="0" />
               </div>
             </div>
             <div class="form-group"> 
@@ -129,7 +129,8 @@
               <div class="col-sm-10">
                 <select class="form-control" name="tmpbill[items][][type]" id="item_1_type" onchange="changeRate(1)">
                   <option value="">--Select Type--</option>
-                  <option value="g">Gold</option>
+                  <option value="g22">Gold 22 Carat</option>
+                  <option value="g18">Gold 18 Carat</option>
                   <option value="s">Silver</option>
                 </select>
               </div>
@@ -141,21 +142,32 @@
               </div>
             </div>
             <div class="form-group"> 
-              <label class="col-sm-2 control-label" for="item_1_stone">Stone Value</label>
+              <label class="col-sm-2 control-label" for="item_1_adname">Additional Name</label>
               <div class="col-sm-10">
-                <input class="form-control" type="text" name="tmpbill[items][][stone]" id="item_1_stone" value="0" onkeyup="calculateTotalAmount(1)" />
+                <input class="form-control" type="text" name="tmpbill[items][][adname]" id="item_1_adname" />
               </div>
             </div>
             <div class="form-group"> 
-              <label class="col-sm-2 control-label" for="item_1_mkchrgrt">Making Charge Rate</label>
+              <label class="col-sm-2 control-label" for="item_1_adprice">Additional Price</label>
               <div class="col-sm-10">
-                <input class="form-control" type="text" name="tmpbill[items][][mkchrgrt]" id="item_1_mkchrgrt" readonly="" value="0" />
+                <input class="form-control" type="text" name="tmpbill[items][][adprice]" id="item_1_adprice" value="0" onkeyup="calculateTotalAmount(1)" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_1_mkchrgrt">Making Charge Rate<button class="btn btn-info btn-xs" type="button" onclick="enableRate(1)">Unlock</button></label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][mkchrgrt]" id="item_1_mkchrgrt" readonly="" value="0" onkeyup="calculateTotalAmount(1)"/>
               </div>
             </div>
             <div class="form-group"> 
               <label class="col-sm-2 control-label" for="item_1_mkchrg">Making Charge</label>
               <div class="col-sm-10">
-                <input class="form-control" type="text" name="tmpbill[items][][mkchrg]" id="item_1_mkchrg" />
+                <div class="input-group">
+                  <input class="form-control" type="text" name="tmpbill[items][][mkchrg]" id="item_1_mkchrg"/>
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" onclick="calculateRateandTotal(1)"><span class="glyphicon glyphicon-repeat"></span></button>
+                  </span>
+                </div><!-- /input-group -->
               </div>
             </div>
             <div class="form-group"> 
@@ -193,15 +205,15 @@
               </div>
             </div>
             <div class="form-group"> 
-              <label class="col-sm-2 control-label" for="item_#ID#_gwgt">Gross Weight (gm)</label>
-              <div class="col-sm-10">
-                <input class="form-control" type="text" name="tmpbill[items][][gwgt]" id="item_#ID#_gwgt" value="0" />
-              </div>
-            </div>
-            <div class="form-group"> 
               <label class="col-sm-2 control-label" for="item_#ID#_nwgt">Net Weight (gm)</label>
               <div class="col-sm-10">
                 <input class="form-control" type="text" name="tmpbill[items][][nwgt]" id="item_#ID#_nwgt" onkeyup="calculateTotalAmount(#ID#)" value="0" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_#ID#_gwgt">Gross Weight (gm)</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][gwgt]" id="item_#ID#_gwgt" value="0" />
               </div>
             </div>
             <div class="form-group"> 
@@ -209,7 +221,8 @@
               <div class="col-sm-10">
                 <select class="form-control" name="tmpbill[items][][type]" id="item_#ID#_type" onchange="changeRate(#ID#)">
                   <option value="">--Select Type--</option>
-                  <option value="g">Gold</option>
+				  <option value="g22">Gold 22 Carat</option>
+                  <option value="g18">Gold 18 Carat</option>
                   <option value="s">Silver</option>
                 </select>
               </div>
@@ -221,21 +234,32 @@
               </div>
             </div>
             <div class="form-group"> 
-              <label class="col-sm-2 control-label" for="item_#ID#_stone">Stone Value</label>
+              <label class="col-sm-2 control-label" for="item_#ID#_adname">Additional Name</label>
               <div class="col-sm-10">
-                <input class="form-control" type="text" name="tmpbill[items][][stone]" id="item_#ID#_stone" value="0" onkeyup="calculateTotalAmount(#ID#)" />
+                <input class="form-control" type="text" name="tmpbill[items][][adname]" id="item_#ID#_adname" />
               </div>
             </div>
             <div class="form-group"> 
-              <label class="col-sm-2 control-label" for="item_#ID#_mkchrgrt">Making Charge Rate</label>
+              <label class="col-sm-2 control-label" for="item_#ID#_adprice">Additional Price</label>
               <div class="col-sm-10">
-                <input class="form-control" type="text" name="tmpbill[items][][mkchrgrt]" id="item_#ID#_mkchrgrt" readonly="" value="0" />
+                <input class="form-control" type="text" name="tmpbill[items][][adprice]" id="item_#ID#_adprice" value="0" onkeyup="calculateTotalAmount(#ID#)" />
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_#ID#_mkchrgrt">Making Charge Rate <button class="btn btn-info btn-xs" onclick="enableRate(#ID#)" type="button">Unlock</button></label>
+              <div class="col-sm-10">
+                <input class="form-control" type="text" name="tmpbill[items][][mkchrgrt]" id="item_#ID#_mkchrgrt" readonly="" value="0" onkeyup="calculateTotalAmount(#ID#)" />
               </div>
             </div>
             <div class="form-group"> 
               <label class="col-sm-2 control-label" for="item_#ID#_mkchrg">Making Charge</label>
               <div class="col-sm-10">
-                <input class="form-control" type="text" name="tmpbill[items][][mkchrg]" id="item_#ID#_mkchrg" />
+                <div class="input-group">
+                  <input class="form-control" type="text" name="tmpbill[items][][mkchrg]" id="item_#ID#_mkchrg"/>
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" onclick="calculateRateandTotal(#ID#)"><span class="glyphicon glyphicon-repeat"></span></button>
+                  </span>
+                </div><!-- /input-group -->
               </div>
             </div>
             <div class="form-group"> 
@@ -247,6 +271,10 @@
   let lastItemId = 1;
   var billConfig = JSON.parse('<%= @billConfig.to_json.html_safe %>');
 
+  function enableRate(id) {
+    document.getElementById("item_"+id+"_mkchrgrt").readOnly = false;
+  }
+
   function addItem() {
     lastItemId = addItemUtil(itmTemplate, "#ID#", lastItemId, "items");
   }
@@ -257,10 +285,19 @@
 
   function calcWeight(id) {
     let weight = Number(document.getElementById('item_'+id+'_nwgt').value);
-    let stone = Number(document.getElementById('item_'+id+'_stone').value);
+    let adprice = Number(document.getElementById('item_'+id+'_adprice').value);
     let qty = Number(document.getElementById('item_'+id+'_qty').value);
     document.getElementById('item_'+id+'_nwgt').value = weight * qty;
-    document.getElementById('item_'+id+'_stone').value = stone * qty;
+    document.getElementById('item_'+id+'_adprice').value = adprice * qty;
+    calculateTotalAmount(id);
+  }
+
+  function calculateRateandTotal(id) {
+    let weight = Number(document.getElementById('item_'+id+'_nwgt').value);
+    let mkchrg = Number(document.getElementById('item_'+id+'_mkchrg').value);
+    if (weight > 0) {
+      document.getElementById('item_'+id+'_mkchrgrt').value = mkchrg / weight;
+    }
     calculateTotalAmount(id);
   }
 
@@ -268,13 +305,22 @@
     let type = document.getElementById('item_'+id+'_type').value;
     let discount = 0;
     
-    if(type == 'g') {
-      let rateofMakingCharge = Number(billConfig['gold_making_charge']);
+    if(type == 'g18') {
+      let rateofMakingCharge = Number(billConfig['gold_18k_making_charge']);
       discount = Number(document.getElementById('tmpbill_rebate_gold').value);
       if(discount != 0) {
         rateofMakingCharge = rateofMakingCharge - (rateofMakingCharge * (discount/100));
       }
-      document.getElementById('item_'+id+'_rate').value = billConfig['gold_rate'];
+      document.getElementById('item_'+id+'_rate').value = billConfig['gold_18k_rate'];
+      document.getElementById('item_'+id+'_mkchrgrt').value = rateofMakingCharge;
+
+    } else if(type == 'g22') {
+      let rateofMakingCharge = Number(billConfig['gold_22k_making_charge']);
+      discount = Number(document.getElementById('tmpbill_rebate_gold').value);
+      if(discount != 0) {
+        rateofMakingCharge = rateofMakingCharge - (rateofMakingCharge * (discount/100));
+      }
+      document.getElementById('item_'+id+'_rate').value = billConfig['gold_22k_rate'];
       document.getElementById('item_'+id+'_mkchrgrt').value = rateofMakingCharge;
 
     } else if(type == 's') {
@@ -293,19 +339,9 @@
   }
 
   function calculateMakingCharge(id) {
-    let rate = Number(document.getElementById('item_'+id+'_rate').value);
     let rateofMakingCharge = Number(document.getElementById('item_'+id+'_mkchrgrt').value);
-    let type = document.getElementById('item_'+id+'_type').value;
     let netWeight = Number(document.getElementById('item_'+id+'_nwgt').value);
-    let discount = 0;
-    if(type == 'g') {
-      discount = Number(document.getElementById('tmpbill_rebate_gold').value);
-    } else if(type == 's') {
-      discount = Number(document.getElementById('tmpbill_rebate_silver').value);
-    }
-    if(discount != 0) {
-      rateofMakingCharge = rateofMakingCharge - (rateofMakingCharge * (discount/100));
-    }
+    
     let totalMakingCharge = rateofMakingCharge * netWeight;
     totalMakingCharge = totalMakingCharge.toFixed(2);
     document.getElementById('item_'+id+'_mkchrg').value =  totalMakingCharge;
@@ -317,8 +353,8 @@
     let netWeight = Number(document.getElementById('item_'+id+'_nwgt').value);
     let totalGoldValue =  rate * netWeight;
     let totalMakingCharge =  calculateMakingCharge(id);
-    let stoneValue = Number(document.getElementById('item_'+id+'_stone').value);
-    let totalAmount = Number(totalMakingCharge) + totalGoldValue + Number(stoneValue);
+    let adprice = Number(document.getElementById('item_'+id+'_adprice').value);
+    let totalAmount = Number(totalMakingCharge) + totalGoldValue + Number(adprice);
     document.getElementById('item_'+id+'_total').value =  totalAmount.toFixed(2);
   }
 
