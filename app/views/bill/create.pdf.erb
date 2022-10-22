@@ -142,11 +142,11 @@
                   <td align="left">Flat Discount on Making Charge</td>
                   <td align="right"><%=  -@tmpBill['flat_discount'].to_f %></td>
                 </tr>
+                <% end %>
                 <tr>
-                  <td align="left">Amount after Discount</td>
+                  <td align="left">Amount after deductions</td>
                   <td align="right"><%= totalAmountAfterDiscount %></td>
                 </tr>
-                <% end %>
                 <tr>
                   <td align="left">S.GST (<%= @tmpBill['sgst'] %>%)</td>
                   <td align="right"><%= sgst %></td>
