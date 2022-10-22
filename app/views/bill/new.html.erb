@@ -83,6 +83,13 @@
           </div>
         </div>
 
+        <div class="form-group"> 
+          <%= label_tag(:deposited_gold, "Deposited Gold (gm, 24 Carat)", class: "col-sm-2 control-label") %>
+          <div class="col-sm-10">
+            <%= text_field(:tmpbill, :deposited_gold, class: "form-control", placeholder: "0.0", value: "0") %>
+          </div>
+        </div>
+
         <div class="checkbox">
           <label><input type="checkbox" name="tmpbill[estimation_bill]" value="1">Estimation Bill ?</label>
         </div>
@@ -131,6 +138,7 @@
                   <option value="">--Select Type--</option>
                   <option value="g22">Gold 22 Carat</option>
                   <option value="g18">Gold 18 Carat</option>
+                  <option value="g14">Gold 14 Carat</option>
                   <option value="s">Silver</option>
                 </select>
               </div>
@@ -138,7 +146,7 @@
             <div class="form-group"> 
               <label class="col-sm-2 control-label" for="item_1_rate">Rate</label>
               <div class="col-sm-10">
-                <input class="form-control" type="text" name="tmpbill[items][][rate]" id="item_1_rate" readonly="" value="0" />
+                <input class="form-control" type="text" name="tmpbill[items][][rate]" id="item_1_rate" value="0" onkeyup="calculateTotalAmount(1)" />
               </div>
             </div>
             <div class="form-group"> 
@@ -157,6 +165,12 @@
               <label class="col-sm-2 control-label" for="item_1_mkchrgrt">Making Charge Rate<button class="btn btn-info btn-xs" type="button" onclick="enableRate(1)">Unlock</button></label>
               <div class="col-sm-10">
                 <input class="form-control" type="text" name="tmpbill[items][][mkchrgrt]" id="item_1_mkchrgrt" readonly="" value="0" onkeyup="calculateTotalAmount(1)"/>
+              </div>
+            </div>
+            <div class="form-group"> 
+              <label class="col-sm-2 control-label" for="item_1_mkchrg_wgt">Making Charge Weight (gm)</label>
+              <div class="col-sm-10">
+                  <input class="form-control" type="text" name="tmpbill[items][][mkchrgwgt]" id="item_1_mkchrg_wgt" value="0"/>
               </div>
             </div>
             <div class="form-group"> 
@@ -223,6 +237,7 @@
                   <option value="">--Select Type--</option>
 				  <option value="g22">Gold 22 Carat</option>
                   <option value="g18">Gold 18 Carat</option>
+                  <option value="g14">Gold 14 Carat</option>
                   <option value="s">Silver</option>
                 </select>
               </div>
@@ -230,7 +245,7 @@
             <div class="form-group"> 
               <label class="col-sm-2 control-label" for="item_#ID#_rate">Rate</label>
               <div class="col-sm-10">
-                <input class="form-control" type="text" name="tmpbill[items][][rate]" id="item_#ID#_rate" readonly="" value="0" />
+                <input class="form-control" type="text" name="tmpbill[items][][rate]" id="item_#ID#_rate" onkeyup="calculateTotalAmount(#ID#)" value="0" />
               </div>
             </div>
             <div class="form-group"> 
@@ -293,10 +308,10 @@
   }
 
   function calculateRateandTotal(id) {
-    let weight = Number(document.getElementById('item_'+id+'_nwgt').value);
+    let mkchrgwgt = Number(document.getElementById('item_'+id+'_mkchrg_wgt').value);
     let mkchrg = Number(document.getElementById('item_'+id+'_mkchrg').value);
-    if (weight > 0) {
-      document.getElementById('item_'+id+'_mkchrgrt').value = mkchrg / weight;
+    if (mkchrgwgt > 0) {
+      document.getElementById('item_'+id+'_mkchrgrt').value = mkchrg / mkchrgwgt;
     }
     calculateTotalAmount(id);
   }
@@ -323,6 +338,15 @@
       document.getElementById('item_'+id+'_rate').value = billConfig['gold_22k_rate'];
       document.getElementById('item_'+id+'_mkchrgrt').value = rateofMakingCharge;
 
+    } else if(type == 'g14') {
+      let rateofMakingCharge = Number(billConfig['gold_14k_making_charge']);
+      discount = Number(document.getElementById('tmpbill_rebate_gold').value);
+      if(discount != 0) {
+        rateofMakingCharge = rateofMakingCharge - (rateofMakingCharge * (discount/100));
+      }
+      document.getElementById('item_'+id+'_rate').value = billConfig['gold_14k_rate'];
+      document.getElementById('item_'+id+'_mkchrgrt').value = rateofMakingCharge;
+
     } else if(type == 's') {
       let rateofMakingCharge = Number(billConfig['silver_making_charge']);
       discount = Number(document.getElementById('tmpbill_rebate_silver').value);
@@ -340,9 +364,9 @@
 
   function calculateMakingCharge(id) {
     let rateofMakingCharge = Number(document.getElementById('item_'+id+'_mkchrgrt').value);
-    let netWeight = Number(document.getElementById('item_'+id+'_nwgt').value);
+    let makingChargeWeight = Number(document.getElementById('item_'+id+'_mkchrg_wgt').value);
     
-    let totalMakingCharge = rateofMakingCharge * netWeight;
+    let totalMakingCharge = rateofMakingCharge * makingChargeWeight;
     totalMakingCharge = totalMakingCharge.toFixed(2);
     document.getElementById('item_'+id+'_mkchrg').value =  totalMakingCharge;
     return totalMakingCharge;

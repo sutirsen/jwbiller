@@ -18,7 +18,7 @@
       <td align="center">
         <h2>S.B. Jewellers</h2>
         <p>45, Chandi Charan Ghosh Road, Barisha, Silpara, Kolkata 700008</p>
-        <p>Phone - (033) 2447-2096, (+91) 9433954734</p>
+        <p>Phone - (+91) 8013386169, (+91) 9433954734</p>
       </td>
     </tr>
     <tr>
@@ -52,6 +52,12 @@
             <td>Additional Info</td>
             <td><%= @tmpBill['buyer_additional_info'] %></td>
           </tr>
+          <% if @tmpBill['deposited_gold'].to_f != 0 %>
+          <tr>
+            <td>Deposited Gold (24 Carat)</td>
+            <td><%= @tmpBill['deposited_gold'] %> gm</td>
+          </tr>
+          <% end %>
         </table>
       </td>
     </tr>
